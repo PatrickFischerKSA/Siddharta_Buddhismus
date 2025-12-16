@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Suche nach Erkenntnis - Choose Your Path</title>
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --panel:#121624;
+      --panel2:#0f1320;
+      --text:#eef2ff;
+      --muted:#b8c0dd;
+      --gold:#d8b55b;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --r:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(216,181,91,.10), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(120,160,255,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    a{color:inherit}
+    .wrap{max-width:1040px; margin:0 auto; padding:28px 18px 60px}
+    header{
+      display:flex; gap:16px; align-items:flex-start; justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .title{
+      margin:0;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing:.2px;
+    }
+    .subtitle{margin:6px 0 0; color:var(--muted); max-width:70ch}
+    .topbar{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .chip{
+      display:inline-flex; gap:8px; align-items:center;
+      border:1px solid var(--line);
+      padding:8px 10px;
+      background: rgba(255,255,255,.04);
+      border-radius: 999px;
+      color:var(--muted);
+      font-size: 13px;
+      user-select:none;
+    }
+    .chip b{color:var(--text); font-weight:600}
+    .btn{
+      appearance:none; border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      font-weight:600;
+    }
+    .btn:hover{background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      background: rgba(216,181,91,.12);
+      border-color: rgba(216,181,91,.35);
+    }
+    .btn.primary:hover{background: rgba(216,181,91,.18)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns: 1fr}
+      header{flex-direction:column; align-items:flex-start}
+      .topbar{justify-content:flex-start}
+      .subtitle{max-width:unset}
+    }
+    .card{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .card .hd h2{
+      margin:0;
+      font-size: 15px;
+      letter-spacing:.3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight:700;
+    }
+    .card .bd{padding:16px}
+    .nodeTitle{
+      margin:0 0 10px;
+      font-size: 20px;
+      letter-spacing:.2px;
+    }
+    .nodeText{margin:0 0 14px; color: var(--text)}
+    .choices{display:grid; gap:10px; margin-top:10px}
+    .choiceBtn{
+      text-align:left;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      transition: background .15s ease, border-color .15s ease, transform .05s ease;
+      position:relative;
+    }
+    .choiceBtn:hover{background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22)}
+    .choiceBtn:active{transform: translateY(1px)}
+    .choiceBtn small{display:block; color:var(--muted); margin-top:4px}
+    .pill{
+      display:inline-flex;
+      padding:4px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(216,181,91,.35);
+      background: rgba(216,181,91,.10);
+      color: var(--gold);
+      font-weight:700;
+      font-size: 12px;
+      letter-spacing:.3px;
+      text-transform: uppercase;
+    }
+    .metrics{
+      display:grid; gap:10px;
+      grid-template-columns: 1fr;
+    }
+    .meter{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding:10px 12px;
+    }
+    .meterTop{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px}
+    .meterTop span{color:var(--muted); font-size:13px}
+    .bar{
+      width:100%;
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+    .bar > i{
+      display:block;
+      height:100%;
+      width: 40%;
+      background: linear-gradient(90deg, rgba(216,181,91,.85), rgba(120,160,255,.75));
+      border-radius:999px;
+    }
+    .asideNote{
+      margin:10px 0 0; color:var(--muted); font-size:13px
+    }
+    .hr{
+      height:1px; background: var(--line); margin:14px 0;
+    }
+    video{
+      width:100%;
+      border-radius: 16px;
+      border:1px solid var(--line);
+      background: #000;
+    }
+    .imgHero{
+      width:100%;
+      border-radius: 16px;
+      border:1px solid var(--line);
+      display:block;
+      max-height: 280px;
+      object-fit: cover;
+      background: #000;
+    }
+    .mini{
+      font-size: 13px; color: var(--muted);
+    }
+    .kicker{color:var(--gold); font-weight:800; letter-spacing:.4px; text-transform:uppercase; font-size:12px}
+    .quote{
+      border-left: 3px solid rgba(216,181,91,.55);
+      padding-left: 12px;
+      margin: 12px 0 0;
+      color: rgba(238,242,255,.92);
+      font-style: italic;
+    }
+    .footer{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:13px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+    }
+    .links{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .linkBtn{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      text-decoration:none;
+    }
+    .linkBtn:hover{background: rgba(255,255,255,.07)}
+    dialog{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(15,19,32,.98);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      padding:0;
+      width:min(960px, calc(100vw - 24px));
+    }
+    dialog::backdrop{background: rgba(0,0,0,.7)}
+    .dlgHd{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background: rgba(0,0,0,.25);
+    }
+    .dlgHd strong{font-size:14px; color: var(--muted); text-transform:uppercase; letter-spacing:.3px}
+    .dlgBd{padding:14px}
+    iframe{
+      width:100%;
+      height: min(70vh, 720px);
+      border:1px solid var(--line);
+      border-radius: 12px;
+      background:#000;
+    }
+    .toast{
+      position:fixed;
+      left:50%;
+      transform: translateX(-50%);
+      bottom:18px;
+      background: rgba(18,22,36,.92);
+      border:1px solid var(--line);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .25s ease;
+      max-width: min(720px, calc(100vw - 24px));
+      font-size: 14px;
+    }
+    .toast.show{opacity:1}
+  
+.choiceBtn{
+  color:#ffffff;
+  background: rgba(30,34,60,.85);
+  border:1px solid rgba(216,181,91,.6);
+}
+.choiceBtn:hover{
+  background: rgba(45,50,90,.95);
+}
+.choiceBtn small{
+  color:#f0e6c0;
+}
+
+.card{
+  background: linear-gradient(180deg, rgba(20,24,50,.95), rgba(10,12,30,.95));
+}
+
+.mini, .asideNote{
+  color:#e2e6ff;
+}
+
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 class="title">Suche nach Erkenntnis</h1>
+        <p class="subtitle">
+          Ein Choose-Your-Path-Spiel zwischen Hesses <i>Siddhartha</i> und buddhistischen Grundideen:
+          Du suchst nicht "richtige Antworten", sondern erlebst, wie sich Wege anfühlen.
+        </p>
+      </div>
+      <div class="topbar">
+        <span class="chip">Kapitel: <b id="chapChip">I</b></span>
+        <span class="chip">Ort: <b id="placeChip">Palast</b></span>
+        <button class="btn" id="btnBack" title="zur vorherigen Entscheidung">↩︎ Zurück</button>
+        <button class="btn" id="btnRestart" title="neu beginnen">⟲ Neustart</button>
+        <button class="btn primary" id="btnJournal" title="deine Spur lesen">✦ Spur</button>
+<button class="btn" id="btnPrint" title="Schlusszitat drucken / als PDF speichern">🖨️ Zitat</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="hd">
+          <h2>Spiel</h2>
+          <span class="pill" id="statePill">Start</span>
+        </div>
+        <div class="bd">
+          <div class="kicker" id="kicker">Beginn</div>
+          <h3 class="nodeTitle" id="nodeTitle">Der goldene Käfig</h3>
+          <p class="nodeText" id="nodeText"></p>
+          <div id="nodeQuote" class="quote" hidden></div>
+
+          <div class="choices" id="choices"></div>
+
+          <div class="hr"></div>
+          <div class="mini" id="hint">
+            Hinweis: Du kannst jederzeit den Film oder die PDFs öffnen. Die Geschichte reagiert auf deine Entscheidungen.
+          </div>
+
+          <div class="footer">
+            <div class="links">
+              <a class="linkBtn" href="#" id="openFilm">🎥 Film öffnen</a>
+              <a class="linkBtn" href="#" id="openImg">🖼 Bild betrachten</a>
+              <a class="linkBtn" href="#" id="openHesse">📄 Hesse-PDF</a>
+              <a class="linkBtn" href="#" id="openBuddh">📄 Buddhismus-PDF</a>
+            </div>
+            <div class="mini" id="saveNote">Speichert lokal (Browser-Session). Keine Daten werden hochgeladen.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="hd">
+          <h2>Innere Lage</h2>
+          <button class="btn" id="btnExplain" title="Wie die Werte zu lesen sind">?</button>
+        </div>
+        <div class="bd">
+          <div class="metrics">
+            <div class="meter">
+              <div class="meterTop"><strong>Anhaftung</strong><span id="mAnhaft">50</span></div>
+              <div class="bar"><i id="bAnhaft"></i></div>
+              <p class="asideNote">Wie stark du dich an Sicherheit, Rollen, Besitz, "Antworten" klammerst.</p>
+            </div>
+            <div class="meter">
+              <div class="meterTop"><strong>Suchdruck</strong><span id="mSuch">50</span></div>
+              <div class="bar"><i id="bSuch"></i></div>
+              <p class="asideNote">Wie sehr dich "Ich muss es jetzt verstehen!" antreibt.</p>
+            </div>
+            <div class="meter">
+              <div class="meterTop"><strong>Angst</strong><span id="mAngst">50</span></div>
+              <div class="bar"><i id="bAngst"></i></div>
+              <p class="asideNote">Wie nahe dir Alter, Krankheit, Tod, Verlust kommen.</p>
+            </div>
+            <div class="meter">
+              <div class="meterTop"><strong>Ruhe</strong><span id="mRuhe">10</span></div>
+              <div class="bar"><i id="bRuhe"></i></div>
+              <p class="asideNote">Nicht "Wohlfühlen", sondern Nicht-Reagieren-Können.</p>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <img class="imgHero" id="heroImg" alt="Buddha" src="buddha.jpg">
+          <p class="mini" style="margin:10px 0 0">
+            Wenn das Bild nicht erscheint: Lege die Datei
+            <code>buddha.jpg</code>
+            in denselben Ordner wie diese <code>index.html</code>.
+          </p>
+
+          <div class="hr"></div>
+          <div class="mini">
+            <b>Wichtig:</b> Dieses Spiel ist bewusst kein "Test". Es soll erfahrbar machen, warum Erkenntnis im Buddhismus
+            oft als <i>Erwachen</i> beschrieben wird - nicht als "richtige Definition".
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <dialog id="dlgFilm">
+    <div class="dlgHd">
+      <strong>Film: Buddhismus</strong>
+      <button class="btn" id="closeFilm">Schließen</button>
+    </div>
+    <div class="dlgBd">
+      <video id="film" controls playsinline preload="metadata">
+        <source src="https://www.dropbox.com/scl/fi/rt3ee44qbyaspnccu1ql5/Buddhismus.mp4?rlkey=r7yzbpgcsxilc4shy8hx8zuwo&raw=1" type="video/mp4">
+        Dein Browser kann dieses Video nicht abspielen. Oeffne es über den Link unten.
+      </video>
+      <p class="mini" style="margin:10px 0 0">
+        Falls das Video nicht laedt, oeffne es direkt:
+        <a href="https://www.dropbox.com/scl/fi/rt3ee44qbyaspnccu1ql5/Buddhismus.mp4?rlkey=r7yzbpgcsxilc4shy8hx8zuwo&dl=0" target="_blank" rel="noopener">Dropbox-Link</a>.
+      </p>
+    </div>
+  </dialog>
+
+  <dialog id="dlgImg">
+    <div class="dlgHd">
+      <strong>Bild</strong>
+      <button class="btn" id="closeImg">Schließen</button>
+    </div>
+    <div class="dlgBd">
+      <img style="width:100%; border-radius:14px; border:1px solid var(--line); display:block"
+           src="buddha.jpg"
+           alt="Buddha Statue">
+      <p class="mini" style="margin:10px 0 0">
+        Dieses Bild wird im Spiel als "Stille-Anker" verwendet: nicht erklären - wirken lassen.
+      </p>
+    </div>
+  </dialog>
+<dialog id="dlgJournal">
+    <div class="dlgHd">
+      <strong>Deine Spur</strong>
+      <button class="btn" id="closeJournal">Schließen</button>
+    </div>
+    <div class="dlgBd">
+      <div id="journalOut" class="mini" style="white-space:pre-wrap; line-height:1.55"></div>
+    </div>
+  </dialog>
+
+  <dialog id="dlgExplain">
+    <div class="dlgHd">
+      <strong>Wie das Spiel denkt</strong>
+      <button class="btn" id="closeExplain">Schließen</button>
+    </div>
+    <div class="dlgBd">
+      <p class="mini" style="margin-top:0">
+        Die Werte sind keine "Punkte". Sie steuern, welche Texte dir begegnen:
+      </p>
+      <ul class="mini">
+        <li><b>Anhaftung</b> steigt, wenn du Sicherheit/Status/Antworten festhalten willst.</li>
+        <li><b>Suchdruck</b> steigt, wenn du Erkenntnis erzwingen willst ("jetzt sofort!").</li>
+        <li><b>Angst</b> steigt, wenn du Leiden als Bedrohung abwehrst.</li>
+        <li><b>Ruhe</b> steigt, wenn du nicht reagierst, sondern wahrnimmst.</li>
+      </ul>
+      <p class="mini">
+        Wichtig: Das Spiel bringt dich absichtlich in Situationen, in denen "mehr tun" nicht hilft.
+        Das ist die didaktische Pointe: Erkenntnis lässt sich nicht per Gewalt herbeirechnen.
+      </p>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const clamp = (n, a=0, b=100) => Math.max(a, Math.min(b, n));
+  const $ = (sel) => document.querySelector(sel);
+  const toast = (msg) => {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._tm);
+    toast._tm = setTimeout(() => t.classList.remove("show"), 2400);
+    ,
+    ausweg: (S) => ({
+      pill:"Ausweg",
+      kicker:"Übersicht",
+      title:"Anhalten",
+      text:"Du kannst hier innehalten: zurück zur Übersicht oder bewusst abschließen.",
+      choices:[
+        { label:"Zur Übersicht", sub:"Startseite", go:"start" },
+        { label:"Spiel beenden", sub:"Mitnehmen, was war", go:"ende_still" }
+      ]
+    })
+  };
+
+  const state = {
+    node: "stille_am_morgen",
+    chap: "I",
+    place: "Palast",
+    anhaftung: 50,
+    suchdruck: 50,
+    angst: 50,
+    ruhe: 10,
+    trail: [],
+    stack: []
+    ,
+    ausweg: (S) => ({
+      pill:"Ausweg",
+      kicker:"Übersicht",
+      title:"Anhalten",
+      text:"Du kannst hier innehalten: zurück zur Übersicht oder bewusst abschließen.",
+      choices:[
+        { label:"Zur Übersicht", sub:"Startseite", go:"start" },
+        { label:"Spiel beenden", sub:"Mitnehmen, was war", go:"ende_still" }
+      ]
+    })
+  };
+
+  const saved = sessionStorage.getItem("erkenntnis_game_state");
+  if (saved) {
+    try { Object.assign(state, JSON.parse(saved)); } catch(e){}
+  }
+
+  const persist = () => sessionStorage.setItem("erkenntnis_game_state", JSON.stringify(state));
+
+  const pushTrail = (line) => { state.trail.push(line); persist(); };
+
+  const pushStack = () => {
+    state.stack.push({
+      node: state.node, chap: state.chap, place: state.place,
+      anhaftung: state.anhaftung, suchdruck: state.suchdruck, angst: state.angst, ruhe: state.ruhe,
+      trailLen: state.trail.length
+    });
+    if (state.stack.length > 80) state.stack.shift();
+    ,
+    ausweg: (S) => ({
+      pill:"Ausweg",
+      kicker:"Übersicht",
+      title:"Anhalten",
+      text:"Du kannst hier innehalten: zurück zur Übersicht oder bewusst abschließen.",
+      choices:[
+        { label:"Zur Übersicht", sub:"Startseite", go:"start" },
+        { label:"Spiel beenden", sub:"Mitnehmen, was war", go:"ende_still" }
+      ]
+    })
+  };
+
+  const popStack = () => {
+    const prev = state.stack.pop();
+    if (!prev) return false;
+    state.node = prev.node; state.chap = prev.chap; state.place = prev.place;
+    state.anhaftung = prev.anhaftung; state.suchdruck = prev.suchdruck; state.angst = prev.angst; state.ruhe = prev.ruhe;
+    state.trail = state.trail.slice(0, prev.trailLen);
+    persist();
+    return true;
+    ,
+    ausweg: (S) => ({
+      pill:"Ausweg",
+      kicker:"Übersicht",
+      title:"Anhalten",
+      text:"Du kannst hier innehalten: zurück zur Übersicht oder bewusst abschließen.",
+      choices:[
+        { label:"Zur Übersicht", sub:"Startseite", go:"start" },
+        { label:"Spiel beenden", sub:"Mitnehmen, was war", go:"ende_still" }
+      ]
+    })
+  };
+
+  function resetVars(S, gentle){
+    if (gentle){
+      S.ruhe = clamp(Math.max(18, S.ruhe - 10));
+      S.anhaftung = 48; S.suchdruck = 46; S.angst = 46;
+    } else {
+      S.anhaftung = 50; S.suchdruck = 50; S.angst = 50; S.ruhe = 10;
+    }
+    S.trail = [];
+    S.stack = [];
+    persist();
+    toast("Neustart.");
+  }
+
+  const dlgFilm = $("#dlgFilm");
+  const dlgImg  = $("#dlgImg");
+const dlgJournal = $("#dlgJournal");
+  const dlgExplain = $("#dlgExplain");
+
+  function openFilm(){ dlgFilm.showModal(); }
+  function openImg(){ dlgImg.showModal(); }
+const NODES = {
+    // --- Erweiterte Zwischenstationen (Verdoppelung der Wegpunkte) ---
+    // --- Kontemplative Stationen (A) ---
+
+    stille_am_morgen: (S) => ({
+      pill:"Stille",
+      kicker:"Zwischen",
+      title:"Morgen ohne Entscheidung",
+      text:"Du wachst auf. Noch bevor Gedanken Form annehmen, ist da Atem. Geräusch. Licht. Nichts fordert dich.",
+      choices:[
+        { label:"Aufstehen", sub:"Der Weg ruft.", go:"reflexion_palast", effect:()=>{ S.ruhe+=4; } },
+        { label:"Verweilen", sub:"Noch ein Moment.", go:"stille_am_morgen", effect:()=>{ S.ruhe+=2; } }
+      ]
+    }),
+
+    weg_am_fluss: (S) => ({
+      pill:"Stille",
+      kicker:"Zwischen",
+      title:"Am Fluss",
+      text:"Der Fluss eilt nicht. Und doch kommt er an. Du spürst: Bewegung braucht keinen Willen.",
+      choices:[
+        { label:"Weitergehen", sub:"Du nimmst das Bild mit.", go:"zwischen_sichtungen", effect:()=>{ S.ruhe+=4; } },
+        { label:"Anhalten", sub:"Kurz aussteigen", go:"ausweg", effect:()=>{ } }
+      ]
+    }),
+
+    nacht_allein: (S) => ({
+      pill:"Stille",
+      kicker:"Zwischen",
+      title:"Allein in der Nacht",
+      text:"Die Welt ist dunkel. Nicht bedrohlich – nur still. Gedanken tauchen auf und vergehen.",
+      choices:[
+        { label:"Nicht folgen", sub:"Du bleibst beim Atem.", go:"nacht_allein", effect:()=>{ S.ruhe+=6; S.suchdruck-=4; } }
+      ]
+    }),
+
+    atem_sitz: (S) => ({
+      pill:"Stille",
+      kicker:"Übung",
+      title:"Sitzen und Atmen",
+      text:"Du sitzt. Der Atem kommt. Der Atem geht. Mehr ist nicht nötig.",
+      choices:[
+        { label:"Aufstehen", sub:"Genug für jetzt.", go:"atem_sitz", effect:()=>{ S.ruhe+=4; } }
+      ]
+    }),
+
+
+    reflexion_palast: (S) => ({
+      pill:"Reflexion",
+      kicker:"Kapitel I",
+      title:"Die erste innere Frage",
+      text:"Bevor du gehst oder bleibst, merkst du: Nicht die Welt zwingt dich – sondern deine Angst vor Leere. Diese Erkenntnis ist leise, aber sie bleibt.",
+      choices:[
+        { label:"Zurück in den Palast", sub:"Du willst noch nicht.", go:"reflexion_palast",
+          effect:()=>{ S.anhaftung+=4; S.suchdruck+=2; } },
+        { label:"Jetzt gehen", sub:"Du nimmst die Unruhe mit.", go:"weg_am_fluss",
+          effect:()=>{ S.ruhe+=4; S.angst+=4; } }
+      ]
+    }),
+
+    zwischen_sichtungen: (S) => ({
+      pill:"Zwischenraum",
+      kicker:"Kapitel II",
+      title:"Nachhall der Sichtungen",
+      text:"Die Bilder lassen dich nicht los. Du bemerkst: Erkenntnis geschieht nicht im Moment der Begegnung, sondern danach.",
+      choices:[
+        { label:"In die Askese", sub:"Du suchst eine Form.", go:"pruefung_askese",
+          effect:()=>{ S.suchdruck+=6; } },
+        { label:"Noch bleiben", sub:"Du beobachtest weiter.", go:"beobachten",
+          effect:()=>{ S.ruhe+=6; } }
+      ]
+    }),
+
+    pruefung_askese: (S) => ({
+      pill:"Prüfung",
+      kicker:"Kapitel III",
+      title:"Der Stolz der Entsagung",
+      text:"Du bemerkst etwas Neues: Selbst Verzicht kann stolz machen. Auch das ist eine Bindung.",
+      choices:[
+        { label:"Noch strenger werden", sub:"Du willst sicher sein.", go:"extrem",
+          effect:()=>{ S.suchdruck+=6; S.ruhe-=2; } },
+        { label:"Locker lassen", sub:"Du erlaubst Menschlichkeit.", go:"gotama_naht",
+          effect:()=>{ S.ruhe+=6; } }
+      ]
+    }),
+
+    stille_vor_mara: (S) => ({
+      pill:"Stille",
+      kicker:"Kapitel V",
+      title:"Die Ruhe vor der Versuchung",
+      text:"Bevor Mara erscheint, ist da ein Moment vollkommener Klarheit. Nichts fehlt. Genau das ist gefährlich.",
+      choices:[
+        { label:"Weiter", sub:"Die Versuchung kommt.", go:"nacht_allein",
+          effect:()=>{ } }
+      ]
+    }),
+
+    nach_erwachen: (S) => ({
+      pill:"Nachklang",
+      kicker:"Kapitel VI",
+      title:"Nach dem mittleren Weg",
+      text:"Du merkst: Auch Erkenntnis will integriert werden. Sonst wird sie zur Erinnerung statt zur Haltung.",
+      choices:[
+        { label:"Still bleiben", sub:"Du lebst weiter.", go:"nach_erwachen",
+          effect:()=>{ } },
+        { label:"Teilen", sub:"Du sprichst vorsichtig.", go:"ende_lehrer",
+          effect:()=>{ } }
+      ]
+    }),
+
+    start: (S) => ({
+      pill: "Start",
+      kicker: "Kapitel I",
+      title: "Der goldene Käfig",
+      quote: "„Allen schuf er Freude, allen war er zur Lust. Er aber … trug er doch keine Freude im Herzen.“",
+      text: "Du wächst behütet auf. Alles ist geordnet. Du lernst, was man lernt. Du tust, was man tut. Und trotzdem: In der Ruhe steht eine Unruhe. Etwas fragt in dir, ohne Worte zu finden. Du kannst bleiben – und das Ungeklärte pflegen wie einen stillen Schmerz. Oder du kannst gehen – und sehen, was dein Vater dich nicht sehen lassen wollte.",
+      choices: [
+        { label:"Im Palast bleiben", sub:"Sicherheit, Ordnung, Rollen – aber die Leere spricht weiter.", go:"palast_bleiben",
+          effect:()=>{ S.anhaftung+=10; S.suchdruck+=8; S.ruhe-=2; } },
+        { label:"Den Palast verlassen", sub:"Du riskierst Unruhe, um Wahrheit zu berühren.", go:"vier_sichtungen",
+          effect:()=>{ S.angst+=10; S.suchdruck+=6; S.anhaftung-=8; } }
+      ]
+    }),
+
+    palast_bleiben: (S) => ({
+      pill:"Wahl", kicker:"Kapitel I", title:"Ein perfekter Tag",
+      text:"Du bleibst. Der Tag ist schön. Die Menschen nennen es 'Glück'. Doch in dir wächst ein Zweifel: Wenn alles erfuellt ist - warum bleibt dann Durst? Du merkst: Auch Komfort kann Anhaftung sein. Auch Bildung kann Flucht sein.",
+      choices:[
+        { label:"Du suchst mehr Lehre, mehr System", sub:"Wenn ich nur genug verstehe, wird es ruhig.", go:"mehr_lehre",
+          effect:()=>{ S.suchdruck+=12; S.anhaftung+=6; S.ruhe-=2; } },
+        { label:"Du gehst trotzdem hinaus", sub:"Du willst nicht mehr 'wissen' - du willst sehen.", go:"weg_am_fluss",
+          effect:()=>{ S.anhaftung-=6; S.angst+=8; } }
+      ]
+    }),
+
+    mehr_lehre: (S) => ({
+      pill:"Lehre", kicker:"Kapitel I", title:"Wissen als Durst",
+      quote:"„… ich glaube dies Wissen hat keinen ärgeren Feind als das Wissenwollen.“",
+      text:"Du sammelst Begriffe. Du ordnest. Du erklaerst dir selbst dein Leben. Und ploetzlich merkst du: Erklaeren kann auch ein Schutz sein. Eine kleine Stimme fragt: Wozu all das, wenn das Wichtigste nicht lebendig wird?",
+      choices:[
+        { label:"Ausbrechen (jetzt)", sub:"Du hältst es nicht mehr aus.", go:"weg_am_fluss",
+          effect:()=>{ S.suchdruck+=4; S.angst+=10; S.anhaftung-=10; } },
+        { label:"Weiter im Kreis (noch)", sub:"Du willst es 'richtig' machen.", go:"kreis_1",
+          effect:()=>{ S.anhaftung+=8; S.suchdruck+=8; S.ruhe-=1; } }
+      ]
+    }),
+
+    kreis_1: (S) => ({
+      pill:"Kreis", kicker:"Kapitel I", title:"Samsara in sauberer Kleidung",
+      text:"Du wiederholst Rituale. Du wirst gut darin. Man lobt dich. Du lobst dich. Und dennoch … du bist nicht zuhause. Etwas in dir erkennt: Kreis bleibt Kreis - auch wenn er glaenzt.",
+      choices:[
+        { label:"Den Kreis durchbrechen", sub:"Du gehst.", go:"weg_am_fluss",
+          effect:()=>{ S.anhaftung-=12; S.angst+=10; S.suchdruck+=4; } },
+        { label:"Den Kreis perfektionieren", sub:"Du suchst 'noch reiner'.", go:"kreis_2",
+          effect:()=>{ S.anhaftung+=10; S.suchdruck+=6; S.ruhe-=2; } }
+      ]
+    }),
+
+    kreis_2: (S) => ({
+      pill:"Kreis", kicker:"Kapitel I", title:"Die Müdigkeit der Perfektion",
+      text:"Du wirst müde - nicht koerperlich. Eher: existentiell. Du verstehst: Perfektion ist auch nur eine Form des Festhaltens. Du kannst den Kreis jetzt verlassen. Oder du kannst warten, bis dich der Kreis verlässt.",
+      choices:[
+        { label:"Jetzt gehen", sub:"Nicht aus Trotz - aus Klarheit.", go:"weg_am_fluss",
+          effect:()=>{ S.anhaftung-=10; S.ruhe+=2; } },
+        { label:"Warten", sub:"Du hoffst auf ein Zeichen.", go:"weg_am_fluss",
+          effect:()=>{ S.angst+=6; S.suchdruck+=4; } }
+      ]
+    }),
+
+    vier_sichtungen: (S) => ({
+      pill:"Begegnung", kicker:"Kapitel II", title:"Die vier Sichtungen",
+      text:"Draußen ist die Welt nicht weich. Du siehst: Alter. Krankheit. Tod. Und dann jemanden, der auf all das nicht flieht, sondern still bleibt. Du verstehst nicht alles - aber du verstehst genug, um nicht mehr zurueckzukönnen.",
+      choices:[
+        { label:"Askese waehlen (radikal)", sub:"Wenn ich den Koerper besiege, besiege ich das Leiden.", go:"pruefung_askese",
+          effect:()=>{ S.suchdruck+=10; S.angst+=6; S.anhaftung-=8; } },
+        { label:"Beobachten ohne sofort zu handeln", sub:"Du lässt die Sichtungen in dir arbeiten.", go:"beobachten",
+          effect:()=>{ S.ruhe+=8; S.suchdruck-=6; S.angst+=4; } }
+      ]
+    }),
+
+    beobachten: (S) => ({
+      pill:"Stille", kicker:"Kapitel II", title:"Wahrnehmen",
+      text:"Du merkst: Der Reflex ist Handlung. Aber Erkenntnis beginnt vielleicht davor. Du lässt die Bilder in dir sein, ohne sie sofort zu loesen. Diese Ruhe fühlt sich nicht angenehm an. Aber sie ist ehrlich.",
+      choices:[
+        { label:"Trotzdem Asket werden", sub:"Du willst eine Methode.", go:"pruefung_askese",
+          effect:()=>{ S.suchdruck+=6; S.ruhe-=2; } },
+        { label:"Den mittleren Weg erahnen", sub:"Nicht fliehen, nicht verzehren.", go:"mittelweg_ahnung",
+          effect:()=>{ S.ruhe+=10; S.suchdruck-=8; S.anhaftung-=6; } }
+      ]
+    }),
+
+    samanas: (S) => ({
+      pill:"Übung", kicker:"Kapitel III", title:"Bei den Samanas",
+      quote:"„Es ist Flucht vor dem Ich … eine kurze Betäubung gegen den Schmerz des Ichseins.“",
+      text:"Du fastest. Du meditierst. Du wirst hart gegen dich. Und du lernst: Du kannst dir entkommen - aber du kehrst zurueck. Je mehr du fliehst, desto deutlicher wird: Flucht ist nicht Freiheit.",
+      choices:[
+        { label:"Fasten steigern", sub:"Mehr Druck, mehr Reinheit.", go:"extrem",
+          effect:()=>{ S.suchdruck+=12; S.angst+=6; S.ruhe-=4; } },
+        { label:"Meditation radikalisieren", sub:"Kontrolle über Atem, Sinne, Gedanken.", go:"extrem",
+          effect:()=>{ S.suchdruck+=10; S.anhaftung+=4; S.ruhe-=2; } },
+        { label:"Den Weg verlassen", sub:"Du willst nicht mehr betaeubt werden.", go:"gotama_naht",
+          effect:()=>{ S.anhaftung-=6; S.ruhe+=6; } }
+      ]
+    }),
+
+    extrem: (S) => ({
+      pill:"Extrem", kicker:"Kapitel III", title:"Das ausgemergelte Versprechen",
+      text:"Du wirst dünn. Wach. Scharf. Aber mit der Schärfe kommt auch Haerte. Gegen die Welt. Gegen dich. Du erkennst: Extreme sind Spiegel. Sie zeigen nur das Gegenteil - nicht die Freiheit.",
+      choices:[
+        { label:"Weiter ins Extrem", sub:"Ein letzter Schritt, dann …", go:"kreis_extrem",
+          effect:()=>{ S.suchdruck+=10; S.angst+=8; S.ruhe-=4; } },
+        { label:"Umdrehen", sub:"Nicht aus Schwaeche, aus Einsicht.", go:"gotama_naht",
+          effect:()=>{ S.ruhe+=10; S.suchdruck-=8; } }
+      ]
+    }),
+
+    kreis_extrem: (S) => ({
+      pill:"Kreis", kicker:"Kapitel III", title:"Der Kreis im Nichts",
+      text:"Du hast fast nichts mehr - und doch bleibt etwas: du selbst, als der, der nichts haben will. Du verstehst: Auch 'Nichts' kann Besitz sein.",
+      choices:[
+        { label:"Loslassen (wirklich)", sub:"Du gehst weiter, ohne zu beweisen.", go:"gotama_naht",
+          effect:()=>{ S.anhaftung-=10; S.ruhe+=10; S.suchdruck-=6; } },
+        { label:"Noch ein Versuch", sub:"Du willst sicher sein.", go:"gotama_naht",
+          effect:()=>{ S.suchdruck+=4; S.angst+=4; } }
+      ]
+    }),
+
+    mittelweg_ahnung: (S) => ({
+      pill:"Ahnung", kicker:"Kapitel VI", title:"Der mittlere Weg (als Gefuehl)",
+      text:"Du kannst ihn noch nicht erklären, aber du spuerst: Es gibt eine Haltung zwischen den Extremen. Nicht betaeuben. Nicht zwingen. Du weisst: Wenn es Erkenntnis gibt, dann ist sie nicht erzwungen.",
+      choices:[
+        { label:"Den Lehrer suchen", sub:"Du willst eine Lehre hören.", go:"gotama_naht",
+          effect:()=>{ S.suchdruck+=2; S.ruhe+=2; } },
+        { label:"Bei dir bleiben", sub:"Du willst nicht nachahmen.", go:"nach_erwachen",
+          effect:()=>{ S.ruhe+=12; S.suchdruck-=10; S.anhaftung-=6; } }
+      ]
+    }),
+
+    gotama_naht: (S) => ({
+      pill:"Begegnung", kicker:"Kapitel IV", title:"Gotama",
+      quote:"„… in welchem kein Suchen … zu erkennen war, nur Licht und Frieden.“",
+      text:"Du siehst ihn gehen. Nicht wie ein Sieger. Eher wie jemand, der nichts mehr beweisen muss. Du erkennst: Seine Ruhe ist selbst Lehre. Jetzt entscheidet sich, wie du 'Lehre' verstehst.",
+      choices:[
+        { label:"Lehre hören (Film starten)", sub:"Du nimmst die Worte auf.", go:"film_node",
+          effect:()=>{ S.suchdruck-=6; S.ruhe+=4; } },
+        { label:"Lehre beobachten (ohne Worte)", sub:"Du schaust auf Gesten, nicht auf Saetze.", go:"beobachten_gotama",
+          effect:()=>{ S.ruhe+=10; S.suchdruck-=10; } },
+        { label:"Lehre ablehnen", sub:"Du willst niemandem folgen.", go:"ablehnen",
+          effect:()=>{ S.anhaftung-=4; S.angst+=6; } }
+      ]
+    }),
+
+    film_node: (S) => ({
+      pill:"Film", kicker:"Kapitel IV", title:"Die Lehre als Stimme",
+      text:"Du öffnest den Film. Du hörst von Siddharthas Aufbruch, von den vier Sichtungen, vom Leiden (Dukkha), von Samsara, Karma, vom mittleren Weg. Waerend du hörst, merkst du: Worte können zeigen - aber nicht tragen.",
+      choices:[
+        { label:"Film öffnen", sub:"Du schaust jetzt (oder später) - aber bewusst.", go:"nacht_allein",
+          effect:()=>{ openFilm(); S.ruhe+=2; } },
+        { label:"Ohne Film weiter (nur Ahnung)", sub:"Du gehst weiter, ohne Absicherung.", go:"nacht_allein",
+          effect:()=>{ S.ruhe+=4; S.suchdruck-=4; } }
+      ]
+    }),
+
+    beobachten_gotama: (S) => ({
+      pill:"Stille", kicker:"Kapitel IV", title:"Lehre ohne Worte",
+      text:"Du merkst: Der Punkt ist nicht, eine Formel zu besitzen. Der Punkt ist, nicht mehr in jedem Moment reagieren zu muessen. Du gehst weiter - und die Versuchung kommt.",
+      choices:[ { label:"Weiter", sub:"Du gehst in den inneren Kampf.", go:"nacht_allein", effect:()=>{ S.ruhe+=6; } } ]
+    }),
+
+    ablehnen: (S) => ({
+      pill:"Eigenweg", kicker:"Kapitel IV", title:"Nicht folgen",
+      text:"Du lehnst nicht die Lehre ab - du lehnst das Nachahmen ab. Du willst nicht 'Buddhist sein'. Du willst frei sein. Doch Freiheit wird jetzt geprueft: Nicht von aussen - von innen.",
+      choices:[ { label:"Weiter", sub:"Du triffst Mara.", go:"nacht_allein", effect:()=>{ S.suchdruck+=4; S.angst+=2; } } ]
+    }),
+
+    mara: (S) => ({
+      pill:"Mara", kicker:"Kapitel V", title:"Mara: die Versuchung",
+      text:"Mara ist nicht nur Daemon. Er ist alles, was dich aus der Stille zieht: Ablenkung, schnelle Loesungen, Selbstbeweis, Angst vor Sinnlosigkeit. Er bietet dir drei Wege an.",
+      choices:[
+        { label:"Reagieren", sub:"Du kaempfst, argumentierst, beweist.", go:"mara_reagieren",
+          effect:()=>{ S.suchdruck+=10; S.angst+=8; S.ruhe-=6; } },
+        { label:"Widerstehen", sub:"Du hältst dagegen - willentlich.", go:"mara_widerstehen",
+          effect:()=>{ S.ruhe+=4; S.suchdruck+=4; } },
+        { label:"Nicht reagieren", sub:"Du siehst es - und lässt es sein.", go:"mittelweg",
+          effect:()=>{ S.ruhe+=16; S.suchdruck-=12; S.angst-=8; S.anhaftung-=10; } }
+      ]
+    }),
+
+    mara_reagieren: (S) => ({
+      pill:"Kampf", kicker:"Kapitel V", title:"Der Kampf erzeugt den Kaempfer",
+      text:"Du gewinnst Argumente. Du verlierst Ruhe. Mara freut sich: Du bist wieder im Spiel des Ich-Beweises. Du kannst weiter kaempfen - oder du kannst merken, dass der Kampf selbst die Fessel ist.",
+      choices:[
+        { label:"Weiter kaempfen", sub:"Noch ein Schlag, dann ist es vorbei.", go:"mara_reagieren",
+          effect:()=>{ S.angst+=4; S.suchdruck+=4; S.ruhe-=2; } },
+        { label:"Stoppen", sub:"Du beendest den Reflex.", go:"mittelweg",
+          effect:()=>{ S.ruhe+=10; S.suchdruck-=8; } }
+      ]
+    }),
+
+    mara_widerstehen: (S) => ({
+      pill:"Kontrolle", kicker:"Kapitel V", title:"Widerstand ist noch Bindung",
+      text:"Du hältst stand. Aber du merkst: Widerstand bindet dich noch an das, wogegen du bist. Du brauchst etwas anderes als Kraft: du brauchst Klarheit.",
+      choices:[
+        { label:"In Nicht-Reagieren kippen", sub:"Du lässt auch den Widerstand los.", go:"mittelweg",
+          effect:()=>{ S.ruhe+=12; S.anhaftung-=8; S.suchdruck-=10; } },
+        { label:"Widerstand halten", sub:"Du willst sicher sein.", go:"mara_widerstehen",
+          effect:()=>{ S.suchdruck+=4; S.ruhe-=1; } }
+      ]
+    }),
+
+    mittelweg: (S) => ({
+      pill:"Weg", kicker:"Kapitel VI", title:"Der mittlere Weg",
+      text:"Nicht Genuss. Nicht Selbstkasteiung. Nicht Kampf. Nicht Flucht. Du sitzt. Du atmest. Du lässt zu. Und ploetzlich ist da etwas, das nicht mehr gezwungen werden muss.",
+      choices:[
+        { label:"Ende: still", sub:"Du gehst weiter ohne Anspruch.", go:"nach_erwachen",
+          effect:()=>{ S.ruhe+=6; } },
+        { label:"Ende: Lehrer", sub:"Du willst es weitergeben.", go:"ende_lehrer",
+          effect:()=>{ S.suchdruck+=4; S.anhaftung+=4; } },
+        { label:"Ende: Kreis", sub:"Du beginnst neu (bewusst).", go:"ende_kreis",
+          effect:()=>{} }
+      ]
+    }),
+
+    ende_still: (S) => ({
+      pill:"Ende", kicker:"Ende", title:"Stilles Ende",
+      text:"Du hast keine Formel. Du hast keine Marke. Du hast etwas Einfaches: du musst nichts mehr beweisen. Die Welt bleibt wandelbar. Aber sie trickst dich nicht mehr so leicht aus.",
+      choices:[ { label:"Neustart", sub:"Du gehst den Weg noch einmal - anders.", go:"start",
+        effect:()=>{ resetVars(S, false); } } ]
+    }),
+
+    ende_lehrer: (S) => ({
+      pill:"Ende", kicker:"Ende", title:"Lehrer-Ende",
+      text:"Du willst helfen. Du willst teilen. Das ist edel. Und doch merkst du: Lehre kann Wegweiser sein - aber niemand kann für jemand anderen gehen. Du gibst weiter, was du kannst: nicht Antworten, sondern Praxis.",
+      choices:[ { label:"Neustart", sub:"Du gehst den Weg noch einmal - mit weniger Worten.", go:"start",
+        effect:()=>{ resetVars(S, false); } } ]
+    }),
+
+    ende_kreis: (S) => ({
+      pill:"Ende", kicker:"Ende", title:"Kreis-Ende (Samsara)",
+      text:"Du beginnst neu. Nicht als Strafe - als Erkenntnis: Wiederkehr ist Übung. Diesmal merkst du frueher, wo du festhältst.",
+      choices:[ { label:"Zurück zum Anfang", sub:"Du startest, aber nicht naiv.", go:"start",
+        effect:()=>{ resetVars(S, true); } } ]
+    })
+    ,
+    ausweg: (S) => ({
+      pill:"Ausweg",
+      kicker:"Übersicht",
+      title:"Anhalten",
+      text:"Du kannst hier innehalten: zurück zur Übersicht oder bewusst abschließen.",
+      choices:[
+        { label:"Zur Übersicht", sub:"Startseite", go:"start" },
+        { label:"Spiel beenden", sub:"Mitnehmen, was war", go:"ende_still" }
+      ]
+    })
+  };
+
+  function applyMetaByNode(nodeKey){
+    const map = {
+      start:["I","Palast"], palast_bleiben:["I","Palast"], mehr_lehre:["I","Palast"], kreis_1:["I","Palast"], kreis_2:["I","Palast"],
+      vier_sichtungen:["II","Stadt"], beobachten:["II","Tor zur Welt"],
+      samanas:["III","Wald"], extrem:["III","Wald"], kreis_extrem:["III","Wald"],
+      mittelweg_ahnung:["VI","Zwischen den Extremen"],
+      gotama_naht:["IV","Jetavana"], film_node:["IV","Jetavana"], beobachten_gotama:["IV","Jetavana"], ablehnen:["IV","Weg"],
+      mara:["V","Bodhi-Baum"], mara_reagieren:["V","Bodhi-Baum"], mara_widerstehen:["V","Bodhi-Baum"],
+      mittelweg:["VI","Mittlerer Weg"],
+      ende_still:["Ende","Stille"], ende_lehrer:["Ende","Weitergabe"], ende_kreis:["Ende","Kreis"]
+    };
+    if (map[nodeKey]){ state.chap=map[nodeKey][0]; state.place=map[nodeKey][1]; }
+  }
+
+  const renderMeters = () => {
+    const a = clamp(state.anhaftung), s = clamp(state.suchdruck), g = clamp(state.angst), r = clamp(state.ruhe);
+    $("#mAnhaft").textContent = a; $("#mSuch").textContent = s; $("#mAngst").textContent = g; $("#mRuhe").textContent = r;
+    $("#bAnhaft").style.width = a + "%"; $("#bSuch").style.width = s + "%"; $("#bAngst").style.width = g + "%"; $("#bRuhe").style.width = r + "%";
+    ,
+    ausweg: (S) => ({
+      pill:"Ausweg",
+      kicker:"Übersicht",
+      title:"Anhalten",
+      text:"Du kannst hier innehalten: zurück zur Übersicht oder bewusst abschließen.",
+      choices:[
+        { label:"Zur Übersicht", sub:"Startseite", go:"start" },
+        { label:"Spiel beenden", sub:"Mitnehmen, was war", go:"ende_still" }
+      ]
+    })
+  };
+
+  const setChips = () => { $("#chapChip").textContent = state.chap; $("#placeChip").textContent = state.place; };
+
+  const renderNode = () => {
+    const fn = NODES[state.node] || NODES.start;
+    const node = fn(state);
+    $("#statePill").textContent = node.pill || "";
+    $("#kicker").textContent = node.kicker || "";
+    $("#nodeTitle").textContent = node.title || "";
+    $("#nodeText").textContent = node.text || "";
+
+    const q = $("#nodeQuote");
+    if (node.quote){ q.hidden=false; q.textContent=node.quote; } else { q.hidden=true; q.textContent=""; }
+
+    const choicesEl = $("#choices");
+    choicesEl.innerHTML = "";
+    (node.choices || []).forEach((c) => {
+      const b = document.createElement("button");
+      b.className = "choiceBtn";
+      b.innerHTML = `<div><b>${c.label}</b></div>${c.sub ? `<small>${c.sub}</small>` : ""}`;
+      b.addEventListener("click", () => {
+        pushStack();
+        try { c.effect && c.effect(); } catch(e){}
+        state.anhaftung = clamp(state.anhaftung); state.suchdruck = clamp(state.suchdruck); state.angst = clamp(state.angst); state.ruhe = clamp(state.ruhe);
+        pushTrail(`• ${$("#kicker").textContent}: ${$("#nodeTitle").textContent} → ${c.label}`);
+        state.node = c.go;
+        applyMetaByNode(state.node);
+        persist();
+        renderAll();
+      });
+      choicesEl.appendChild(b);
+    });
+
+    renderMeters();
+    setChips();
+    ,
+    ausweg: (S) => ({
+      pill:"Ausweg",
+      kicker:"Übersicht",
+      title:"Anhalten",
+      text:"Du kannst hier innehalten: zurück zur Übersicht oder bewusst abschließen.",
+      choices:[
+        { label:"Zur Übersicht", sub:"Startseite", go:"start" },
+        { label:"Spiel beenden", sub:"Mitnehmen, was war", go:"ende_still" }
+      ]
+    })
+  };
+
+  const renderAll = () => renderNode();
+
+  $("#openFilm").addEventListener("click", (e)=>{ e.preventDefault(); openFilm(); });
+  $("#openImg").addEventListener("click", (e)=>{ e.preventDefault(); openImg(); });
+  $("#openHesse").addEventListener("click", (e)=>{ e.preventDefault(); window.open("Hesse_Siddhartha_Text.pdf","_blank"); });
+$("#openBuddh").addEventListener("click", (e)=>{ e.preventDefault(); window.open("KI-Multimedia-Tool_Buddhismus-online-audio-convertercommp3_16-12-2025.pdf","_blank"); });
+$("#closeFilm").addEventListener("click", ()=>dlgFilm.close());
+  $("#closeImg").addEventListener("click", ()=>dlgImg.close());
+$("#closeJournal").addEventListener("click", ()=>dlgJournal.close());
+  $("#closeExplain").addEventListener("click", ()=>dlgExplain.close());
+
+  $("#btnJournal").addEventListener("click", () => {
+    const lines = [];
+    lines.push("DEINE SPUR");
+    lines.push("----------------------------");
+    lines.push(state.trail.length ? state.trail.join("\n") : "Noch keine Entscheidungen.");
+    lines.push("\nWERTE");
+    lines.push("----------------------------");
+    lines.push(`Anhaftung: ${clamp(state.anhaftung)} / Suchdruck: ${clamp(state.suchdruck)} / Angst: ${clamp(state.angst)} / Ruhe: ${clamp(state.ruhe)}`);
+    $("#journalOut").textContent = lines.join("\n");
+    dlgJournal.showModal();
+  });
+
+  $("#btnExplain").addEventListener("click", ()=>dlgExplain.showModal());
+
+  $("#btnRestart").addEventListener("click", () => {
+    resetVars(state, false);
+    state.node = "start";
+    applyMetaByNode(state.node);
+    persist();
+    renderAll();
+  });
+
+  $("#btnBack").addEventListener("click", () => {
+    if (!popStack()){ toast("Nichts zum Zurückgehen."); return; }
+    applyMetaByNode(state.node);
+    renderAll();
+    toast("Zurück.");
+  });
+
+  applyMetaByNode(state.node);
+  renderAll();
+})();
+
+// --- Schlusszitat-Funktion (Siddhartha) ---
+function getSiddharthaQuote(S){
+  if (S.ruhe >= 70 && S.suchdruck <= 30){
+    return "„Wissen kann man mitteilen, Weisheit aber nicht. Man kann sie finden, erleben, leben – doch nicht lehren.“";
+  }
+  if (S.suchdruck >= 65){
+    return "„Ich habe das Denken verlernt, ich habe das Wissen verlernt. Ich habe nur eines behalten: die Fähigkeit zu warten.“";
+  }
+  if (S.anhaftung >= 60){
+    return "„Alles lügt, alles stinkt, alles stinkt nach Lüge, wenn man nicht selbst den Weg geht.“";
+  }
+  if (S.angst >= 60){
+    return "„Wenn man jemanden sucht, geschieht es leicht, dass man nur das findet, was man sucht.“";
+  }
+  return "„Der Sinn und das Wesen der Dinge ist nicht irgendwo hinter ihnen verborgen – er ist in ihnen, in allem.“";
+}
+
+// Hook: erweitere Endknoten um persönliches Zitat
+const originalRenderNode = renderNode;
+renderNode = () => {
+  originalRenderNode();
+  if (state.node.startsWith("ende_")){
+    const q = document.createElement("div");
+    q.className = "quote";
+    q.style.marginTop = "16px";
+    q.textContent = getSiddharthaQuote(state);
+    const container = document.querySelector(".card .bd");
+    if (container && !container.querySelector(".quote.final")){
+      q.classList.add("final");
+      container.appendChild(q);
+    }
+  }
+};
+
+
+// --- Druck / PDF-Export des Schlusszitats ---
+document.getElementById("btnPrint").addEventListener("click", () => {
+  const quote = document.querySelector(".quote.final");
+  if (!quote){
+    alert("Das Schlusszitat erscheint erst am Spielende.");
+    return;
+  }
+  const w = window.open("", "_blank");
+  w.document.write(`
+    <html>
+    <head>
+      <title>Siddhartha – Wegzitat</title>
+      <meta charset="utf-8">
+      <style>
+        body{font-family: Georgia, "Times New Roman", serif; padding:60px; line-height:1.6;}
+        h1{font-size:20px; margin-bottom:24px;}
+        blockquote{font-size:18px; font-style:italic; border-left:4px solid #999; padding-left:16px;}
+        .footer{margin-top:40px; font-size:12px; color:#555;}
+      </style>
+    </head>
+    <body>
+      <h1>Ein Zitat auf deinem Weg</h1>
+      <blockquote>${quote.textContent}</blockquote>
+      <div class="footer">Hermann Hesse, <i>Siddhartha</i></div>
+    </body>
+    </html>
+  `);
+  w.document.close();
+  w.focus();
+});
+
+</script>
+</body>
+</html>
